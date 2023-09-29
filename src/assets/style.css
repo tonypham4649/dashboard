@@ -1,0 +1,7 @@
+body {
+    margin: 0px;
+}
+
+#root > div {
+    display: block !important;
+}

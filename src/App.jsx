@@ -1,35 +1,102 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from "react";
+import { Layout, Menu, Space } from "antd";
+import { AppstoreOutlined } from "@ant-design/icons";
+import { Route, Routes, useNavigate } from "react-router-dom";
+import routes from "./routes";
 
-function App() {
-  const [count, setCount] = useState(0)
+const { Sider, Content } = Layout;
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+const contentStyle = {
+  textAlign: "center",
+  minHeight: "80vh",
+  lineHeight: "120px",
+  color: "#000000",
+  paddingTop: "3rem",
+};
+const siderStyle = {
+  textAlign: "center",
+  lineHeight: "120px",
+  paddingTop: "1rem",
+};
+
+function getItem(label, key, icon, children, path) {
+  return {
+    key,
+    icon,
+    children,
+    label,
+    path,
+  };
 }
 
-export default App
+const items = [
+  getItem("Products", "sub1", <AppstoreOutlined />, [
+    getItem("Add Item", "1", null, null, "/"),
+    getItem("Edit Item", "2", null, null, "/edit"),
+    getItem("Delete Item", "3", null, null, "/delete"),
+  ]),
+];
+
+const App = () => {
+  const navigate = useNavigate();
+
+  const renderMenuItems = (items) =>
+    items.map((item) => {
+      if (item.children) {
+        return (
+          <Menu.SubMenu key={item.key} icon={item.icon} title={item.label}>
+            {renderMenuItems(item.children)}
+          </Menu.SubMenu>
+        );
+      } else {
+        return (
+          <Menu.Item key={item.key} onClick={() => navigate(item.path)}>
+            {item.label}
+          </Menu.Item>
+        );
+      }
+    });
+
+  const [collapsed, setCollapsed] = useState(false);
+  // const toggleCollapsed = () => {
+  //   setCollapsed(!collapsed);
+  // };
+
+  const routeComponents = routes.map(({ path, element }, key) => (
+    <Route path={path} element={element} key={key} />
+  ));
+
+  return (
+    <Space
+      direction="vertical"
+      style={{
+        width: "100%",
+      }}
+      size={[0, 48]}
+    >
+      <Layout>
+        <Sider style={siderStyle}>
+          <Menu
+            style={{
+              height: "100vh",
+              textAlign: "center",
+              paddingLeft: "0px",
+            }}
+            defaultSelectedKeys={["1"]}
+            defaultOpenKeys={["sub1"]}
+            mode="inline"
+            theme="dark"
+          >
+            {renderMenuItems(items)}
+          </Menu>
+        </Sider>
+        <Layout>
+          <Content style={contentStyle}>
+            <Routes>{routeComponents}</Routes>
+          </Content>
+        </Layout>
+      </Layout>
+    </Space>
+  );
+};
+export default App;
