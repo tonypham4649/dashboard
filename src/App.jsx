@@ -57,11 +57,6 @@ const App = () => {
       }
     });
 
-  const [collapsed, setCollapsed] = useState(false);
-  // const toggleCollapsed = () => {
-  //   setCollapsed(!collapsed);
-  // };
-
   const routeComponents = routes.map(({ path, element }, key) => (
     <Route path={path} element={element} key={key} />
   ));
